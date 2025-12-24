@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Brain</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f8f9fb; color: #1c1c1c; }
+    header { padding: 16px; background: #1f2933; color: #fff; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    header h1 { margin: 0; font-size: 20px; }
+    header label { font-size: 12px; display: flex; flex-direction: column; }
+    header input, header select { padding: 6px 8px; border-radius: 4px; border: 1px solid #ccc; min-width: 180px; }
+    header button { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; background: #0f766e; color: #fff; }
+    .layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px; }
+    .column { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; display: flex; flex-direction: column; }
+    .column h2 { margin: 0; padding: 10px 12px; background: #eef2f7; border-bottom: 1px solid #e5e7eb; font-size: 16px; }
+    .tasks { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .task { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; cursor: pointer; }
+    .task:hover { border-color: #0f766e; }
+    .task .title { font-weight: 600; margin-bottom: 4px; }
+    .task .meta { font-size: 12px; color: #4b5563; display: flex; gap: 8px; flex-wrap: wrap; }
+    .tabs { display: flex; gap: 8px; padding: 0 16px 12px; }
+    .tab { padding: 6px 12px; border-radius: 16px; border: 1px solid #cbd5e1; cursor: pointer; background: #fff; }
+    .tab.active { background: #0f766e; color: #fff; border-color: #0f766e; }
+    dialog { width: 420px; max-width: 90vw; border: none; border-radius: 8px; padding: 0; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+    dialog header { background: #0f766e; color: #fff; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
+    dialog form { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    dialog label { font-size: 13px; font-weight: 600; }
+    dialog input, dialog select, dialog textarea { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #cbd5e1; }
+    dialog textarea { resize: vertical; min-height: 80px; }
+    dialog .actions { display: flex; justify-content: flex-end; gap: 8px; }
+    .pill { padding: 2px 6px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 11px; }
+    .status-pill { background: #e0f2fe; color: #075985; }
+    .filter-row { display: flex; gap: 10px; align-items: center; padding: 0 16px 12px; }
+    .filter-row select { padding: 6px 8px; }
+    .notice { font-size: 12px; color: #0f172a; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Task Brain</h1>
+    <label>API Token<input type="password" id="tokenInput" placeholder="x-taskbrain-token" /></label>
+    <label>Base URL<input type="text" id="baseUrlInput" placeholder="http://0.0.0.0:8787" /></label>
+    <button id="savePrefs">Save</button>
+    <button id="refreshBtn">Refresh</button>
+    <span class="notice">Enter token to load tasks. Data stays local.</span>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="board">Board</button>
+    <button class="tab" data-tab="inbox">Inbox</button>
+  </div>
+
+  <div class="filter-row">
+    <label>Workstream
+      <select id="workstreamFilter">
+        <option value="all">All</option>
+        <option value="FGL">FGL</option>
+        <option value="Freelance">Freelance</option>
+        <option value="Personal">Personal</option>
+        <option value="Unknown">Unknown</option>
+      </select>
+    </label>
+    <label>Status
+      <select id="statusFilter">
+        <option value="all">All</option>
+        <option value="today">Today</option>
+        <option value="next">Next</option>
+        <option value="backlog">Backlog</option>
+        <option value="done">Done</option>
+        <option value="blocked">Blocked</option>
+        <option value="inbox">Inbox</option>
+      </select>
+    </label>
+  </div>
+
+  <div id="boardView" class="layout"></div>
+  <div id="inboxView" style="display:none; padding: 0 16px 16px;"></div>
+
+  <dialog id="taskDialog">
+    <header>
+      <span id="dialogTitle">Task</span>
+      <button id="closeDialog" aria-label="Close">✕</button>
+    </header>
+    <form id="taskForm">
+      <label>Title<input type="text" name="title" required /></label>
+      <label>URL<input type="url" name="url" required /></label>
+      <label>Status
+        <select name="status">
+          <option value="inbox">Inbox</option>
+          <option value="today">Today</option>
+          <option value="next">Next</option>
+          <option value="backlog">Backlog</option>
+          <option value="done">Done</option>
+          <option value="blocked">Blocked</option>
+        </select>
+      </label>
+      <label>Workstream
+        <select name="workstream">
+          <option value="FGL">FGL</option>
+          <option value="Freelance">Freelance</option>
+          <option value="Personal">Personal</option>
+          <option value="Unknown">Unknown</option>
+        </select>
+      </label>
+      <label>Criticality
+        <select name="criticality">
+          <option value="P0">P0</option>
+          <option value="P1">P1</option>
+          <option value="P2">P2</option>
+          <option value="P3">P3</option>
+        </select>
+      </label>
+      <label>Effort
+        <select name="effort">
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+        </select>
+      </label>
+      <label>Due At<input type="datetime-local" name="dueAt" /></label>
+      <label>Notes<textarea name="notes"></textarea></label>
+      <div class="actions">
+        <button type="submit">Save</button>
+      </div>
+      <input type="hidden" name="id" />
+    </form>
+  </dialog>
+
+  <script src="/main.js" type="module"></script>
+</body>
+</html>

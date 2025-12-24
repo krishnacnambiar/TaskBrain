@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Brain</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 12px; width: 340px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 12px; }
+    input, select, textarea { width: 100%; padding: 6px; margin-top: 4px; border-radius: 4px; border: 1px solid #d1d5db; }
+    textarea { resize: vertical; min-height: 80px; }
+    button { margin-top: 10px; padding: 8px 10px; width: 100%; background: #0f766e; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    .row { display: flex; gap: 8px; }
+    .row > div { flex: 1; }
+    .status { margin-top: 6px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h2>Task Brain</h2>
+  <form id="taskForm">
+    <label>Title<input type="text" id="title" required /></label>
+    <label>URL<input type="url" id="url" required /></label>
+    <label>Selection<textarea id="selection" placeholder="Highlighted text"></textarea></label>
+    <label>Notes<textarea id="notes" placeholder="Notes"></textarea></label>
+    <div class="row">
+      <div>
+        <label>Workstream
+          <select id="workstream">
+            <option value="FGL">FGL</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Personal">Personal</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>Criticality
+          <select id="criticality">
+            <option value="P0">P0</option>
+            <option value="P1">P1</option>
+            <option value="P2">P2</option>
+            <option value="P3">P3</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Effort
+          <select id="effort">
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>Due At<input type="datetime-local" id="dueAt" /></label>
+      </div>
+    </div>
+    <button type="submit">Send to Task Brain</button>
+    <div class="status" id="status"></div>
+  </form>
+  <p class="status">Configure server URL and token in the extension Options page.</p>
+  <script src="popup.js"></script>
+</body>
+</html>

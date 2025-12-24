@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Brain Options</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 16px; max-width: 480px; }
+    label { display: block; margin-bottom: 12px; font-weight: 600; font-size: 13px; }
+    input { width: 100%; padding: 8px; margin-top: 4px; border-radius: 4px; border: 1px solid #d1d5db; }
+    button { padding: 10px 12px; background: #0f766e; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-top: 8px; }
+    .status { margin-top: 10px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h2>Task Brain Options</h2>
+  <label>Base URL<input type="url" id="baseUrl" placeholder="http://192.168.1.10:8787" /></label>
+  <label>API Token<input type="password" id="token" placeholder="x-taskbrain-token" /></label>
+  <button id="save">Save</button>
+  <div class="status" id="status"></div>
+  <script src="options.js"></script>
+</body>
+</html>
